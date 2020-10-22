@@ -22,9 +22,9 @@ pipeline {
                 echo "Lets start Long Journey! ENV: ${ENV}"
                 echo 'Clonning Repository'
 
-                git url: 'https://github.com/frontalnh/temp.git',
+                git url: 'https://github.com/han2290/temp.git',
                     branch: 'master',
-                    credentialsId: 'jenkinsgit'
+                    credentialsId: 'jenkins_git_token'
             }
 
             post {
@@ -32,6 +32,15 @@ pipeline {
                 // failed, record the test results and archive the jar file.
                 success {
                     echo 'Successfully Cloned Repository'
+                }
+
+                always {
+                  echo "i tried..."
+                }
+
+                // 가장 마지막 실행
+                cleanup {
+                  echo "after all other post condition"
                 }
             }
         }
@@ -43,7 +52,7 @@ pipeline {
             // 프론트엔드 디렉토리의 정적파일들을 S3 에 올림, 이 전에 반드시 EC2 instance profile 을 등록해야함.
             dir ('./website'){
                 sh '''
-                aws s3 sync ./ s3://namhoontest
+                aws s3 sync ./ s3://oneum
                 '''
             }
           }
@@ -54,17 +63,21 @@ pipeline {
               success {
                   echo 'Successfully Cloned Repository'
 
-                  mail  to: 'frontalnh@gmail.com',
+                  // Email 보내는 사람에 대한 Credential도 필요
+                  mail  to: 'woom2290@gmail.com',
                         subject: "Deploy Frontend Success",
                         body: "Successfully deployed frontend!"
+                  
                   
               }
               failure {
                   echo 'I failed :('
 
-                  mail  to: 'frontalnh@gmail.com',
+                  
+                  mail  to: 'woom2290@gmail.com',
                         subject: "Failed Pipelinee",
                         body: "Something is wrong with deploy frontend"
+                  
               }
           }
         }
@@ -140,7 +153,7 @@ pipeline {
 
           post {
             success {
-              mail  to: 'frontalnh@gmail.com',
+              mail  to: 'woom2290@gmail.com',
                     subject: "Deploy Success",
                     body: "Successfully deployed!"
                   
